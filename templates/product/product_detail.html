@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block name %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<p>Название: {{ product.name }}</p>
+<img src="{{ product.image.url }}" height="200"><br><br>
+<p>Цена: {{ product.price }} $</p>
+<p>Коментарий: {{ product.body }}</p>
+<p>Гарантия: {{ product.guarantee }} месяцев</p>
+<p>Категория: {{ product.category.name }}</p>
+<p>Производитель: {{ product.make_company.name }}</p>
+<p>Страна: {{ product.make_country.name }}</p>
+<p>Партия: {{ product.product_batch.season }}</p>
+<p>Дата создания: {{ product.create_at }}</p>
+<p>Дата обновления: {{ product.updated_at }}</p>
+
+<a href="{% url 'products:product-delete' product.pk %}">Удалить</a>
+<h2>Отзывы</h2>
+{% for review in reviews %}
+    <form method="post" action="{% url 'products:product-detail' pk=product.pk %}">
+        {% csrf_token %}
+        <p>
+            <strong>
+                {% if review.user %}
+                    {{ review.user.username }}
+                {% else %}
+                    Аноним
+                {% endif %}
+            </strong>
+            ({{ review.created_at }}): {{ review.comment }}
+        </p>
+        {% if review.user == request.user %}
+            <button type="submit" name="delete_review" value="{{ review.pk }}">Удалить</button>
+        {% endif %}
+    </form>
+{% endfor %}
+
+<h3>Оставить отзыв</h3>
+<form method="post" action="{% url 'products:product-detail' pk=product.pk %}">
+    {% csrf_token %}
+    <label for="comment">Комментарий:</label><br>
+    <textarea id="comment" name="comment" required></textarea><br><br>
+
+    <label for="star_given">Оценка (1-5):</label><br>
+    <input type="number" id="star_given" name="star_given" min="1" max="5" required><br><br>
+
+    <input type="submit" value="Отправить">
+</form>
+
+<h2>Похожие продукты</h2>
+<ul>
+    {% for related_product in related_products %}
+        <li><a href="{% url 'products:product-detail' pk=related_product.pk %}">{{ related_product.name }}</a>
+    {% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+<p>&copy; 2024 My Website. Подробности о продукте. Все права защищены.</p>
+{% endblock footer %}
+
+
+
+

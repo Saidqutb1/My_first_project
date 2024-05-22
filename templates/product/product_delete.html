@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block name %}Удалить {{ product.name }}{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Вы уверены, что хотите удалить товар?</p>
+    <input type="submit" value="Подтверждать">
+</form>
+<a href="{% url 'products:product-detail' product.pk %}">Нет</a>
+{% endblock %}
+
+{% block footer %}
+<p>&copy; 2024 My Website. Удаление продукта. Все права защищены.</p>
+{% endblock %}
+
+

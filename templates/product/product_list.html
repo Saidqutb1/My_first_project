@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block name %}Товары{% endblock %}
+
+{% block content %}
+<h1>Товары</h1>
+<form action="{% url 'products:product-list' %}" method="get">
+    <select name="category">
+        <option value="">Выберите категорию</option>
+        {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Поиск">
+</form>
+<a href="{% url 'products:create-product' %}">Добавить товар</a><br><br>
+{% for p in products %}
+    <a href="{% url 'products:product-detail' pk=p.pk %}">{{ p.name }}</a><br><br>
+{% endfor %}
+{% endblock %}
+
+{% block footer %}
+<p>&copy; 2024 My Website. Товары страница. Все права защищены.</p>
+{% endblock %}
+
+
+
