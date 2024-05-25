@@ -1,10 +1,7 @@
 from django.db import models
-from django.shortcuts import render, redirect
-from django.views import View
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.conf import settings
 
 # Create your models here.
 
@@ -48,7 +45,7 @@ class ProductBatch(models.Model):
         return self.season
 
 
-class Products(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=100)
     body = models.TextField()
     guarantee = models.IntegerField()
@@ -69,10 +66,6 @@ class Products(models.Model):
         return self.name
 
 
-
-
-CustomUser = get_user_model()
-
 class Review(models.Model):
     comment = models.CharField(max_length=200)
     star_given = models.IntegerField(
@@ -82,8 +75,8 @@ class Review(models.Model):
             MinValueValidator(1)
         ]
     )
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = 'review'
@@ -91,8 +84,18 @@ class Review(models.Model):
     def __str__(self):
         return f'{self.star_given} - {self.product.name} - {self.user.username if self.user else "Anonymous"}'
 
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_total_price(self):
+        return sum(item.product.price * item.quantity for item in self.cartitem_set.all())
 
 
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
 
 

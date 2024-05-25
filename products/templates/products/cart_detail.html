@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Корзина</h1>
+<table>
+    <tr>
+        <th>Товар</th>
+        <th>Количество</th>
+        <th>Цена</th>
+        <th>Удалить</th>
+    </tr>
+    {% for item in cart.cartitem_set.all %}
+    <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.product.price }}</td>
+        <td><a href="{% url 'remove-from-cart' item.id %}">Удалить</a></td>
+    </tr>
+    {% endfor %}
+</table>
+<p>Итого: {{ cart.get_total_price }}</p>
+{% endblock %}
